@@ -1,0 +1,239 @@
+INTERN.JAVA FILE
+
+
+package com.cap.entity;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "Inter_Details")
+public class Intern
+{
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
+	private String fname;
+	private String lname;
+	private String email;
+	private String mno;
+	private String city;
+	private String domain;
+	private int salary;
+
+	public Intern() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getFname() {
+		return fname;
+	}
+
+	public void setFname(String fname) {
+		this.fname = fname;
+	}
+
+	public String getLname() {
+		return lname;
+	}
+
+	public void setLname(String lname) {
+		this.lname = lname;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getMno() {
+		return mno;
+	}
+
+	public void setMno(String mno) {
+		this.mno = mno;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+
+	public int getSalary() {
+		return salary;
+	}
+
+	public void setSalary(int salary) {
+		this.salary = salary;
+	}
+
+	@Override
+	public String toString() {
+		return "Intern [id=" + id + ", fname=" + fname + ", lname=" + lname + ", email=" + email + ", mno=" + mno
+				+ ", city=" + city + ", domain=" + domain + ", salary=" + salary + "]";
+	}
+
+
+}
+
+--------------------------------------------------------------------------------------------------------------------
+
+INTERNSERVICE.JAVA FILE
+
+package com.cap.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cap.entity.Intern;
+import com.cap.repository.InternRepo;
+
+@Service
+public class InternService {
+
+	@Autowired
+	private InternRepo repo;
+
+	public void addInt(Intern e) {
+		repo.save(e);
+	}
+
+	public List<Intern> getAllInt() {
+		return repo.findAll();
+	}
+
+	public Intern getIntById(int id) {
+		Optional<Intern> e = repo.findById(id);
+		if (e.isPresent()) {
+			return e.get();
+		}
+		return null;
+	}
+
+	public void deleteInt(int id) {
+		repo.deleteById(id);
+	}
+
+	
+
+}
+--------------------------------------------------------------------------------------------------------------------
+INTERNCONTROLLER.JAVA FILE
+
+
+
+package com.cap.controller;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import com.cap.entity.Intern;
+import com.cap.service.InternService;
+
+@Controller
+public class InternController {
+
+	@Autowired
+	private InternService service;
+
+	@GetMapping("/")
+	public String home() {
+		return "index.html";
+	}
+
+	@GetMapping("/addInt")
+	public String addIntForm() {
+		return "add_int";
+	}
+
+	@PostMapping("/register")
+	public String empRegister(Intern e, HttpSession session) {
+		service.addInt(e);
+		session.setAttribute("msg", "Emplyoee Added Sucessfully..");
+		return "redirect:/";
+	}
+
+	@GetMapping("/edit/{id}")
+	public String edit( int id) {
+		Intern e = service.getIntById(id);
+		return "edit";
+	}
+
+	@PostMapping("/update")
+	public String updateEmp( Intern e, HttpSession session) {
+		service.addInt(e);
+		session.setAttribute("msg", "Intern Data Update Sucessfully..");
+		return "redirect:/";
+	}
+
+	@GetMapping("/delete/{id}")
+	public String deleteInt( int id, HttpSession session) {
+
+		service.deleteInt(id);
+		session.setAttribute("msg", "Intern Data Delete Sucessfully..");
+		return "redirect:/";
+	}
+
+	
+
+}
+--------------------------------------------------------------------------------------------------------------------
+
+INTERNREPO.JAVA File
+
+package com.cap.repository;
+
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.cap.entity.Intern;
+
+@Repository
+public interface InternRepo  extends JpaRepository<Intern, Integer>{
+
+}
+--------------------------------------------------------------------------------------------------------------------
+
+APPLICATION.PROPERTIES.java
+
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/intern
+spring.datasource.username=root
+spring.datasource.password=root1234
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
